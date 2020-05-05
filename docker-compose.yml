@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      # Эту папку не нало маппить
+      - /app/node_modules
+      # Смапь все что внутри . на локальной машине в папку /app внутри контейнера
+      - .:/app
+    # Фикс для react-create-app https://github.com/facebook/create-react-app/issues/8688
+    stdin_open: true
+
+  # Либо можно подключиться к текущему контейнеру web: docker exec WEB_CONTAINER_ID npm run test
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ['npm', 'run', 'test']
